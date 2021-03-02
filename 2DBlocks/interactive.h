@@ -15,7 +15,11 @@ namespace interactive
     std::string getStringFromUser(std::string message);
     size_t getSize_tFromUser(std::string message);
 
+    int getXFromUser(std::string message, World world);
+    int getYFromUser(std::string message, World world);
+
     bool isBadInput();
+    bool isBetween(int start, int end, int toTest);
     void clearCinBuffer();
 }
 

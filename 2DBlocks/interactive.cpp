@@ -63,9 +63,9 @@ namespace interactive
 	// Prompt the user to place a tile
 	void promptPlace(World world)
 	{
-		int chosenX{ interactive::getIntFromUser("Where do you want to place (X coordinate)? ") };
-		int chosenY{ interactive::getIntFromUser("Where do you want to place (Y coordinate)? ") };
-		std::string charsToPlace{ interactive::getStringFromUser("What do you want to place (type any string) ? ")};
+		int chosenX{ interactive::getXFromUser("Where do you want to place (X coordinate)? ", world) };
+		int chosenY{ interactive::getYFromUser("Where do you want to place (Y coordinate)? ", world) };
+		std::string charsToPlace{ interactive::getStringFromUser("What do you want to place (type any string)? ")};
 
 		gridhandling::fillLines(chosenX, chosenY, charsToPlace, world);
 		std::cout << '\'' << charsToPlace << "\' placed at X: " << chosenX << ", Y: " << chosenY << '\n';
@@ -73,9 +73,9 @@ namespace interactive
 
 	void promptDestroy(World world)
 	{
-		int chosenX{ getIntFromUser("Where do you want to start destroying (X coordinate)? ") };
-		int chosenY{ getIntFromUser("Where do you want to start destroying (Y coordinate)? ") };
-		int destroyCount{ interactive::getIntFromUser("How many tiles do you want to destroy(default: 1) ? ") };
+		int chosenX{ interactive::getXFromUser("Where do you want to start destroying (X coordinate)? ", world) };
+		int chosenY{ interactive::getYFromUser("Where do you want to start destroying (Y coordinate)? ", world) };
+		int destroyCount{ interactive::getIntFromUser("How many tiles do you want to destroy? ") };
 
 		gridhandling::destroyLines(chosenX, chosenY, destroyCount, world);
 	}
@@ -124,15 +124,48 @@ namespace interactive
 	// Gets std::size_t entered by the user
 	size_t getSize_tFromUser(std::string message)
 	{
-		size_t result{};
+		long long result{}; // size_t is unsigned, so we need to use a long long to make sure result is positive to avoid overflow
+		bool valid{ false };
 		do
 		{
 			std::cout << message;
 			std::cin >> result;
 			interactive::clearCinBuffer();
-		} while (interactive::isBadInput());
+
+			if (!(result >= 0))
+			{
+				std::cout << "Invalid, please enter a whole number larger than -1\n";
+			}
+			else if (interactive::isBadInput()) {}
+			else
+			{
+				valid = true;
+			}
+		} while (!valid);
 
 		return result;
+	}
+
+	int getXFromUser(std::string message, World world)
+	{
+		int chosenX{ interactive::getIntFromUser(message) };
+		while (!isBetween(-1, world.xLength, chosenX))
+		{
+			chosenX = interactive::getIntFromUser(message);
+		}
+
+		return chosenX;
+	}
+	
+	int getYFromUser(std::string message, World world)
+	{
+		int chosenY{ interactive::getIntFromUser(message) };
+		while (!isBetween(-1, world.yLength, chosenY))
+		{
+			chosenY = interactive::getIntFromUser(message);
+		}
+
+		return chosenY;
 	}
 
 	// Checks for cin fail state
@@ -147,6 +180,20 @@ namespace interactive
 		}
 		else
 		{
+			return false;
+		}
+	}
+
+	// Checks whether toTest is between start and end
+	bool isBetween(int start, int end, int toTest)
+	{
+		if (toTest > start && toTest < end)
+		{
+			return true;
+		}
+		else
+		{
+			std::cout << "Invalid, please enter a whole number between " << start << " and " << end << '\n';
 			return false;
 		}
 	}
