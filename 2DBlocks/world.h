@@ -5,20 +5,20 @@
 
 struct Tile
 {
-    char type{ ' ' };
+	char type{ ' ' };
 };
 
 struct World
 {
-    // Flattened two-dimensional array
-    Tile* grid{};
-    std::size_t xLength{};
-    std::size_t yLength{};
+	// Flattened two-dimensional array
+	Tile* grid{};
+	std::size_t xLength{};
+	std::size_t yLength{};
 };
 
 namespace world
 {
-    void generate(World world);
+	void generate(World world);
 }
 
 #endif
