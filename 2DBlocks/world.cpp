@@ -1,25 +1,66 @@
-#include "world.h" // World structs
+﻿#include "World.h"
 
-#include <iostream> // std::cout
+#include <iostream>
 
-namespace world
+// Prints m_grid with border
+std::ostream& operator<< (std::ostream& out, const World& world)
 {
-	// Generates world and prints useful information
-	void generate(World world)
-	{
-		std::cout << "Generating world...\n"
-			<< "Tip: you can look at your world by pressing ENTER or L when the prompt shows up.\n"
-			<< "Tip: the top-left tile is at X: 0 Y: 0\n"
-			<< "Tip: you only need to type the letters in brackets to perform the specified action\n"
-			<< "Tip: you can use lowercase and/or capital letters\n"
-			<< "Tip: once I\'ve implemented multithreading, these tips will print as the world generates instead of printing instantly beforehand\n";
+    const auto width{ world.m_grid.size() };
+    const auto height{ world.m_grid.at(0).size() };
 
-		std::size_t xLength{ world.xLength };
-		std::size_t yLength{ world.yLength };
-		world.grid = new Tile[xLength * yLength]{};
-		std::cout << "Done!\n"
-			<< "Tiles in world: " << xLength * yLength << " tiles\n"
-			<< "Tiles on X axis: " << xLength << " tiles\n"
-			<< "Tiles on Y axis: " << yLength << " tiles\n";
-	}
+    for (World::coord_type currentY{ world.getStartY() }; currentY < height;
+        ++currentY)
+    {
+        if (currentY == world.getStartY())
+        {
+            out << world.horBorder().str() << '\n';
+        }
+
+        for (World::coord_type currentX{ 0 }; currentX < width; ++currentX)
+        {
+            if (currentX == world.getStartX())
+            {
+                out << world.m_border;
+            }
+
+            out << world.m_grid.at(currentX).at(currentY);
+
+            if (currentX == width - 1)
+            {
+                out << world.m_border;
+            }
+        }
+        out << '\n';
+
+        if (currentY == height - 1)
+        {
+            out << world.horBorder().str() << '\n';
+        }
+    }
+
+    return out;
+}
+
+// Fills the world with Tiles
+void World::fill(const Tile& tile)
+{
+    for (coord_type currentY{ 0 }; currentY < m_height; ++currentY)
+    {
+        for (coord_type currentX{ 0 }; currentX < m_width; ++currentX)
+        {
+            setTile(tile, currentX, currentY);
+        }
+    }
+}
+
+// Get horizontal border
+std::stringstream World::horBorder() const
+{
+    std::stringstream line{};
+    for (coord_type currentX{ m_startX }; currentX < m_width + 2;
+        ++currentX)
+    {
+        line << m_border.getType();
+    }
+    return line;
 }

@@ -15,19 +15,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="devtools.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="gridhandling.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="world.cpp">
+    <ClCompile Include="World.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -35,16 +32,13 @@
     <Text Include="Design.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="devtools.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="gridhandling.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="world.h">
+    <ClInclude Include="World.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="input.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

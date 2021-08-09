@@ -1,6 +1,8 @@
 #ifndef INPUT_H
 #define INPUT_H
 
+class World;
+
 #include <iostream>
 #include <string>
 
@@ -10,33 +12,19 @@ namespace input
     void ignoreLine();
 }
 
-namespace interactive
-{
-	char prompt();
-	bool choose(char choice, World world);
-	void promptPlace(World world);
-	void promptDestroy(World world);
-
-	int getXFromUser(std::string message, World world);
-	int getYFromUser(std::string message, World world);
-
-	bool isBetween(int start, int end, int toTest);
-	void clearCinBuffer();
-}
-
 // --------------------------------- Inline --------------------------------- //
 
 namespace input
 {
     // Print query and return user input
-    template <typename input, typename queryType>
-    input get(queryType query)
+    template <typename Tret, typename Tquery>
+    Tret get(Tquery query)
     {
-        input num{};
+        Tret ret{};
         while (true)
         {
             std::cout << query;
-            std::cin >> num;
+            std::cin >> ret;
             ignoreLine();
 
             if (std::cin.fail())
@@ -51,7 +39,7 @@ namespace input
             }
         }
 
-        return num;
+        return ret;
     }
 }
 
