@@ -1,5 +1,7 @@
 ﻿#include "World.h"
 
+#include <algorithm>
+#include <string>
 #include <iostream>
 
 // Prints m_grid with border
@@ -7,13 +9,14 @@ std::ostream& operator<< (std::ostream& out, const World& world)
 {
     const auto width{ world.m_grid.size() };
     const auto height{ world.m_grid.at(0).size() };
+    const auto horizontalBorder{ world.horBorder() };
 
     for (World::coord_type currentY{ world.getStartY() }; currentY < height;
         ++currentY)
     {
         if (currentY == world.getStartY())
         {
-            out << world.horBorder().str() << '\n';
+            out << horizontalBorder << '\n';
         }
 
         for (World::coord_type currentX{ 0 }; currentX < width; ++currentX)
@@ -34,7 +37,7 @@ std::ostream& operator<< (std::ostream& out, const World& world)
 
         if (currentY == height - 1)
         {
-            out << world.horBorder().str() << '\n';
+            out << horizontalBorder << '\n';
         }
     }
 
@@ -54,13 +57,11 @@ void World::fill(const Tile& tile)
 }
 
 // Get horizontal border
-std::stringstream World::horBorder() const
+std::string World::horBorder() const
 {
-    std::stringstream line{};
-    for (coord_type currentX{ m_startX }; currentX < m_width + 2;
-        ++currentX)
-    {
-        line << m_border.getType();
-    }
+    std::string line{};
+    line.resize(m_width + 2);
+    std::fill(line.begin(), line.end(), m_border.getType());
+
     return line;
 }

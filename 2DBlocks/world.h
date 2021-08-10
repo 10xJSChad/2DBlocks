@@ -27,7 +27,7 @@ private:
     constexpr static coord_type m_startY{ 0 };
 
     // Get horizontal border
-    std::stringstream horBorder() const;
+    std::string horBorder() const;
 public:
     World(coord_type width = 1, coord_type height = 1)
     {

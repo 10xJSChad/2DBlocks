@@ -8,7 +8,7 @@ class World;
 
 namespace input
 {
-	// Clear the input buffer
+    // Clear the input buffer
     void ignoreLine();
 }
 
