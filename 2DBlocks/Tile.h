@@ -13,7 +13,7 @@ public:
     Tile() = default;
     Tile(type_type type) : m_type{ type } {}
 
-    inline type_type getType() const { return m_type; }
+    type_type getType() const { return m_type; }
 
     friend std::ostream& operator<< (std::ostream& out, const Tile& tile);
 };

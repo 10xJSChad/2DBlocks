@@ -144,16 +144,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Coord2D.cpp" />
     <ClCompile Include="input.cpp" />
+    <ClCompile Include="user.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Design.txt" />
-  </ItemGroup>
-  <ItemGroup>
+    <ClInclude Include="Coord2D.h" />
     <ClInclude Include="input.h" />
+    <ClInclude Include="user.h" />
     <ClInclude Include="Tile.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>

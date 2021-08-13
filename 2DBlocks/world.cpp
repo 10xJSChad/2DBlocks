@@ -1,41 +1,75 @@
-﻿#include "World.h"
+﻿#include "Coord2D.h"
+#include "World.h"
 
 #include <algorithm>
 #include <string>
 #include <iostream>
 
-// Prints m_grid with border
-std::ostream& operator<< (std::ostream& out, const World& world)
+// Constructor which takes 2 corners
+World::World(const Coord2D& start, const Coord2D& end)
+    : m_start{ start }, m_end{ end },
+    m_offset{ -(start.getX()), -(start.getY()) }
 {
-    const auto width{ world.m_grid.size() };
-    const auto height{ world.m_grid.at(0).size() };
-    const auto horizontalBorder{ world.horBorder() };
+    assert(start < end && "bottom-left corner should go first");
 
-    for (World::coord_type currentY{ world.getStartY() }; currentY < height;
+    const auto size(m_end - m_start);
+    m_grid.resize(size.getX());
+
+    for (x_type::size_type i{ 0 }; i != (m_end + m_offset).getX(); ++i)
+    {
+        m_grid.at(i).resize(size.getY());
+    }
+};
+
+// Return a line of chr (no trailing new-line)
+std::string charLine(char chr, int length)
+{
+    std::string line{};
+    line.resize(length);
+    std::ranges::fill(line, chr);
+
+    return line;
+}
+
+// Print world with border
+std::ostream& operator<< (std::ostream& out, const World& world)
+{ // TODO: color, coordinates
+    const auto startX{ world.begin().getX() };
+    const auto startY{ world.begin().getY() };
+    const auto endX{ world.end().getX() };
+    const auto endY{ world.end().getY() };
+
+    const auto borderChar{ world.getBorder().getType() };
+
+    const auto horizontalBorder{
+        charLine(borderChar, endX - startX + 2) }; // 2 corners
+
+    for (World::coord_type::axis_type currentY{ startY }; currentY < endY;
         ++currentY)
     {
-        if (currentY == world.getStartY())
+        if (currentY == startY)
         {
             out << horizontalBorder << '\n';
         }
 
-        for (World::coord_type currentX{ 0 }; currentX < width; ++currentX)
+        for (World::coord_type::axis_type currentX{ startX }; currentX < endX;
+            ++currentX)
         {
-            if (currentX == world.getStartX())
+            if (currentX == startX)
             {
-                out << world.m_border;
+                out << borderChar;
             }
 
-            out << world.m_grid.at(currentX).at(currentY);
+            out << world.getTile(Coord2D{ currentX, currentY });
 
-            if (currentX == width - 1)
+            if (currentX == endX - 1)
             {
-                out << world.m_border;
+                out << borderChar;
             }
         }
         out << '\n';
 
-        if (currentY == height - 1)
+        if (currentY == endY - 1)
         {
             out << horizontalBorder << '\n';
         }
@@ -44,24 +78,32 @@ std::ostream& operator<< (std::ostream& out, const World& world)
     return out;
 }
 
-// Fills the world with Tiles
+// Fill the world with tiles
 void World::fill(const Tile& tile)
 {
-    for (coord_type currentY{ 0 }; currentY < m_height; ++currentY)
+    for (coord_type::axis_type y{ m_start.getY() }; y < m_end.getY(); ++y)
     {
-        for (coord_type currentX{ 0 }; currentX < m_width; ++currentX)
+        for (coord_type::axis_type x{ m_start.getX() }; x < m_end.getX(); ++x)
         {
-            setTile(tile, currentX, currentY);
+            place(tile, Coord2D{ x, y });
         }
     }
 }
 
-// Get horizontal border
-std::string World::horBorder() const
+// Return the Tile at coord
+const Tile& World::getTile(const Coord2D& coord) const
 {
-    std::string line{};
-    line.resize(m_width + 2);
-    std::fill(line.begin(), line.end(), m_border.getType());
+    assert(coord.isInRangeOf(*this));
 
-    return line;
+    const auto index{ coord + m_offset };
+    return m_grid.at(index.getX()).at(index.getY());
+}
+
+// Set the Tile at coord
+void World::place(const Tile& tile, const Coord2D& coord)
+{
+    assert(coord.isInRangeOf(*this));
+
+    const auto index{ coord + m_offset };
+    m_grid.at(index.getX()).at(index.getY()) = tile;
 }

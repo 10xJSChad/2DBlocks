@@ -1,89 +1,39 @@
 #include "input.h"
-#include "world.h"
+#include "user.h"
+#include "World.h"
 
 #include <cassert>
 #include <iostream>
+#include <string_view>
 
-// Returns true if in range
-bool validateXCoord(const World& world, World::coord_type x)
-{
-    if (!world.testCoords(x))
-    {
-        std::cout << x << ": X coordinate must be between " << world.getStartX()
-            << " and " << world.getWidth() - 1 << ", please try again.\n";
-        return false;
-    };
-    return true;
-}
-
-// Returns true if in range
-bool validateYCoord(const World& world, World::coord_type y)
-{
-    if (!world.testCoords(1, y))
-    {
-        std::cout << y << ": Y coordinate must be between " << world.getStartY()
-            << " and " << world.getHeight() - 1 << ", please try again.\n";
-        return false;
-    };
-    return true;
-}
-
-void promptDestroy(World& world)
-{
-    constexpr std::string_view xPrompt{ "What do you want to destroy (X "
-        "coordinate)? "};
-    auto chosenX{ input::get<World::coord_type>(xPrompt) };
-    while (!validateXCoord(world, chosenX))
-    {
-        chosenX = input::get<World::coord_type>(xPrompt);
-    }
-
-    constexpr std::string_view yPrompt{
-        "What do you want to destroy (Y coordinate)? "};
-    auto chosenY{ input::get<World::coord_type>(yPrompt) };
-    while (!validateYCoord(world, chosenY))
-    {
-        chosenY = input::get<World::coord_type>(yPrompt);
-    }
-
-    world.setTile(world.getEmpty(), chosenX, chosenY);
-}
+// Ask the user for the next action
+// Returns false when done
+bool prompt(World& world);
 
 // Prompt the user to place a tile
-void promptPlace(World& world)
+void promptPlace(World& world);
+
+// Prompt the user to destroy a tile
+void promptDestroy(World& world);
+
+int main()
 {
-    constexpr std::string_view xPrompt{
-        "Where do you want to place (X coordinate)? "
+    const auto corners{ user::getCoord2DCornersFromUser(
+        "Where should the top-right corner be?\n",
+        "And the bottom-left corner?\n") 
     };
-    auto chosenX{ input::get<World::coord_type>(xPrompt) };
-    while (!validateXCoord(world, chosenX))
-    {
-        chosenX = input::get<World::coord_type>(xPrompt);
-    }
 
-    constexpr std::string_view yPrompt{
-        "Where do you want to place (Y coordinate)? "
-    };
-    auto chosenY{ input::get<World::coord_type>(yPrompt) };
-    while (!validateYCoord(world, chosenY))
-    {
-        chosenY = input::get<World::coord_type>(yPrompt);
-    }
+    World overworld{ corners.second, corners.first + 1 };
 
-    constexpr std::string_view tilePrompt{
-        "What tile do you want to place (single character)? "
-    };
-    auto chosenTileType{ input::get<Tile::type_type>(tilePrompt) };
+    while (prompt(overworld));
 
-    world.setTile(chosenTileType, chosenX, chosenY);
-    std::cout << '\'' << chosenTileType << "\' placed at X: " << chosenX
-        << ", Y: " << chosenY << '\n';
+    return 0;
 }
 
 // Ask the user for the next action
 // Returns false when done
 bool prompt(World& world)
-{
+{ // TODO: Horizontal > navigation > bar
     auto printHelp{
         []()
         {
@@ -100,9 +50,10 @@ bool prompt(World& world)
         }
     };
 
-    constexpr std::string_view promptMsg{"What do you want to do (type help to "
-        "list all commands)? "};
+    constexpr std::string_view promptMsg{ "What do you want to do (type help to "
+        "list all commands)? " };
     auto choice{ input::get<std::string>(promptMsg) };
+
     auto printInvalid{
         [&]()
         {
@@ -112,6 +63,9 @@ bool prompt(World& world)
     };
     while (true)
     {
+        // TODO: implement a dynamic way of doing this, e.g. an array of tuples
+        // that stores names, descriptions and function pointers. Should then
+        // also update printHelp().
         switch (choice.at(0))
         {
         case 'H':
@@ -155,14 +109,26 @@ bool prompt(World& world)
     }
 }
 
-int main()
+// Prompt the user to place a tile
+void promptPlace(World& world)
 {
-    World overworld{
-        input::get<World::coord_type>("How wide shall the world be? "),
-        input::get<World::coord_type>("How tall shall the world be? ")
+    constexpr std::string_view prompt{ "Where do you want to place?\n" };
+    auto coord{ user::getValidCoord2DFromUser(prompt, world) };
+
+    constexpr std::string_view tilePrompt{
+        "What do you want to place (single character)? "
     };
+    auto chosenTileType{ input::get<Tile::type_type>(tilePrompt) };
 
-    while (prompt(overworld));
+    world.place(chosenTileType, coord);
+    std::cout << '\'' << chosenTileType << "\' placed at " << coord << '\n';
+}
 
-    return 0;
+// Prompt the user to destroy a tile
+void promptDestroy(World& world)
+{
+    constexpr std::string_view prompt{ "What do you want to destroy?\n" };
+    auto coord{ user::getValidCoord2DFromUser(prompt, world) };
+
+    world.place(world.getEmpty(), coord);
 }

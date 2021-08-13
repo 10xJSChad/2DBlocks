@@ -1,8 +1,6 @@
 #ifndef INPUT_H
 #define INPUT_H
 
-class World;
-
 #include <iostream>
 #include <string>
 
