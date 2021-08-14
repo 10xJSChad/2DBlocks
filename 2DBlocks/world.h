@@ -18,6 +18,7 @@ private:
     using y_type = std::vector<Tile>;
     using x_type = std::vector<y_type>;
     x_type m_grid{};
+    x_type m_backupGrid{};
     Coord2D m_start{ 0, 0 }; // Bottom-left
     Coord2D m_end{ 1, 1 };   // Top-right + { 1, 1 }
 
@@ -34,6 +35,7 @@ public:
 
     const Tile& getTile(const Coord2D& coord) const;
     void place(const Tile& tile, const Coord2D& coord);
+    void back();
 
     const Coord2D& begin() const { return m_start; } // Bottom-left
     const Coord2D& end()   const { return m_end; }   // Top-right + { 1, 1 }

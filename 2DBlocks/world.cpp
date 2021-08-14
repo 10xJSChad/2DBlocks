@@ -19,6 +19,7 @@ World::World(const Coord2D& start, const Coord2D& end)
     {
         m_grid.at(i).resize(size.getY());
     }
+    m_backupGrid = m_grid;
 };
 
 // Return a line of chr (no trailing new-line)
@@ -105,5 +106,12 @@ void World::place(const Tile& tile, const Coord2D& coord)
     assert(coord.isInRangeOf(*this));
 
     const auto index{ coord + m_offset };
+    m_backupGrid = m_grid;
     m_grid.at(index.getX()).at(index.getY()) = tile;
+}
+
+void World::back() {
+    x_type temp = m_grid;
+    m_grid = m_backupGrid;
+    m_backupGrid = temp;
 }

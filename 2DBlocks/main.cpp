@@ -24,7 +24,6 @@ int main()
     };
 
     World overworld{ corners.second, corners.first + 1 };
-
     while (prompt(overworld));
 
     return 0;
@@ -68,6 +67,10 @@ bool prompt(World& world)
         // also update printHelp().
         switch (choice.at(0))
         {
+        case 'B':
+        case 'b':
+            world.back();
+            break;
         case 'H':
         case 'h':
             printHelp();
